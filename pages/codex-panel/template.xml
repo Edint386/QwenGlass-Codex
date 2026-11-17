@@ -1,0 +1,216 @@
+<view xmlns:a="waft://dsl" width="100%" height="100%" flex-flow="row" flex-cross="start" column-gap="0" bg-color="#000000">
+  <!-- codex-panel：Codex Desktop 任务面板。
+       左栏是提问和回复/实时进度，右栏是计划、改动、上下文和三个圆环。
+       m：0 回复，1 字号，2 草稿，3 实时两栏，4 任务列表，5 菜单，6 快捷回复，7 计划与改动。
+       P：回复页六槽；i 是当前槽；R 是实时时间流七行；PL 是计划五行。
+       绑定上限 128，数据键上限 64，根节点直接子元素上限 64。 -->
+  <page-meta theme="no-status-bar|disable-chat-bar" screen-awake="keep" confirm-back-text="再双击一次退出" />
+  <prompt-config text="" />
+  <json st='{"slot": {{i}}, "c": {{c}}, "dv": {{dv}}, "m": {{m}}, "k": {{d:k}}, "s": {{d:s}}, "l": {{lv}}, "f": {{d:fv}}}' />
+  <lifecycle-event on-show="svc://ui-action?mode=mcp&amp;name=show&amp;params={{json:st}}" on-hide="svc://ui-action?mode=mcp&amp;name=hide&amp;params={{json:st}}" on-focus="svc://ui-action?mode=mcp&amp;name=focus&amp;params={{json:st}}" on-blur="svc://ui-action?mode=mcp&amp;name=blur&amp;params={{json:st}}" on-screen-on="svc://ui-action?mode=mcp&amp;name=screen_on&amp;params={{json:st}}" on-screen-off="svc://ui-action?mode=mcp&amp;name=screen_off&amp;params={{json:st}}" />
+  <data an="0,0,1,1,linear" g="0" k="0" s="0" fv="18" />
+
+  <key-event a:if="{{m == 0}}" on-key-enter="emit://event/menu?" on-key-next="emit://event/tn?" on-key-prev="emit://event/tp?" />
+  <key-event a:elif="{{m == 3}}" on-key-enter="emit://event/menu?" on-key-next="svc://ui-action?mode=mcp&amp;name=newer&amp;params={{json:st}}" on-key-prev="svc://ui-action?mode=mcp&amp;name=older&amp;params={{json:st}}" />
+  <key-event a:elif="{{m > 6}}" on-key-enter="emit://event/menu?" on-key-next="emit://event/nop?" on-key-prev="emit://event/nop?" />
+  <key-event a:elif="{{m > 3}}" on-key-enter="emit://event/pick?k={{c}}&amp;s={{m}}" on-key-next="emit://event/cn?" on-key-prev="emit://event/cp?" />
+  <key-event a:elif="{{m == 1}}" on-key-enter="emit://event/fs?" on-key-next="emit://event/fu?" on-key-prev="emit://event/fd?" />
+  <key-event a:else="" on-key-enter="emit://event/send?" on-key-next="emit://event/drop?" on-key-prev="emit://event/drop?" on-key-back="svc://ui-action?mode=mcp&amp;name=exit&amp;params={{json:st}}" />
+
+  <event match="event://tn?" a:if="{{i == hi}}" action="dataSource://update?m=3&amp;rp=1" />
+  <event match="event://tn?" a:if="{{i == hi}}" action="svc://ui-action?mode=mcp&amp;name=more&amp;params={{json:st}}" />
+  <event match="event://tn?" a:if="{{i != hi}}" action="dataSource://update?i={{nx[i].n}}" />
+  <event match="event://tp?" a:if="{{i != lo}}" action="dataSource://update?i={{pv[i].n}}" />
+  <event match="event://t" action="svc://ui-action?mode=mcp&amp;name=turn&amp;params={{json:st}}" />
+
+  <event match="event://cn?" action="dataSource://update?c={{ln[c].n}}" />
+  <event match="event://cn?" action="data://update?g={{d:g + 1}}&amp;an={{ln[c].d}},0,250,1,ease-out" />
+  <event match="event://cn?" action="emit://event/d25?n=25&amp;g={{d:g}}" />
+  <event match="event://cp?" action="dataSource://update?c={{lp[c].n}}" />
+  <event match="event://cp?" action="data://update?g={{d:g + 1}}&amp;an={{lp[c].d}},0,250,1,ease-out" />
+  <event match="event://cp?" action="emit://event/d25?n=25&amp;g={{d:g}}" />
+  <event match="event://d1" action="emit://event/d{{e:n - 1}}?n={{e:n - 1}}&amp;g={{e:g}}" />
+  <event match="event://d2" action="emit://event/d{{e:n - 1}}?n={{e:n - 1}}&amp;g={{e:g}}" />
+  <event match="event://d3" action="emit://event/d{{e:n - 1}}?n={{e:n - 1}}&amp;g={{e:g}}" />
+  <event match="event://d4" action="emit://event/d{{e:n - 1}}?n={{e:n - 1}}&amp;g={{e:g}}" />
+  <event match="event://d5" action="emit://event/d{{e:n - 1}}?n={{e:n - 1}}&amp;g={{e:g}}" />
+  <event match="event://d6" action="emit://event/d{{e:n - 1}}?n={{e:n - 1}}&amp;g={{e:g}}" />
+  <event match="event://d7" action="emit://event/d{{e:n - 1}}?n={{e:n - 1}}&amp;g={{e:g}}" />
+  <event match="event://d8" action="emit://event/d{{e:n - 1}}?n={{e:n - 1}}&amp;g={{e:g}}" />
+  <event match="event://d9" action="emit://event/d{{e:n - 1}}?n={{e:n - 1}}&amp;g={{e:g}}" />
+  <event match="event://d0?" a:if="{{e:g == d:g}}" action="data://update?an=0,0,1,1,linear" />
+
+  <event match="event://menu?" action="data://update?an=0,0,1,1,linear" />
+  <event match="event://menu?" action="dataSource://update?c=11&amp;m=5" />
+  <event match="event://menu?" action="svc://ui-action?mode=mcp&amp;name=menu&amp;params={{json:st}}" />
+  <event match="event://pick?" action="data://update?an=0,0,1,1,linear&amp;k={{e:k}}&amp;s={{e:s}}&amp;fv={{fz}}" />
+  <event match="event://pick?" a:if="{{e:k == 16}}" action="dataSource://update?m=1" />
+  <event match="event://pick?" a:elif="{{e:k == 15}}" action="dataSource://update?c=6&amp;m=6" />
+  <event match="event://pick?" a:elif="{{e:k == 14}}" action="dataSource://update?m=7" />
+  <event match="event://pick?" a:elif="{{e:k == 13}}" action="dataSource://update?m={{mv.m}}&amp;rp={{mv.p}}" />
+  <event match="event://pick?" a:elif="{{e:k == 12}}" action="dataSource://update?c=0&amp;m=4" />
+  <event match="event://pick?" a:elif="{{e:k == 6}}" action="dataSource://update?c=15&amp;m=5" />
+  <event match="event://pick?" a:elif="{{e:k == 0}}" action="dataSource://update?c=12&amp;m=5" />
+  <event match="event://pick?" a:else="" action="dataSource://update?m=0" />
+  <event match="event://pick?" action="svc://ui-action?mode=mcp&amp;name=pick&amp;params={{json:st}}" />
+
+  <event match="event://fu?" a:if="{{d:fv != 24}}" action="data://update?fv={{d:fv + 2}}" />
+  <event match="event://fd?" a:if="{{d:fv != 16}}" action="data://update?fv={{d:fv - 2}}" />
+  <event match="event://fs?" action="dataSource://update?m=0" />
+  <event match="event://fs?" action="svc://ui-action?mode=mcp&amp;name=font&amp;params={{json:st}}" />
+  <event match="event://send?" action="dataSource://update?m=0" />
+  <event match="event://send?" action="svc://ui-action?mode=mcp&amp;name=send&amp;params={{json:st}}" />
+  <event match="event://drop?" action="dataSource://update?m=0" />
+  <event match="event://drop?" action="svc://ui-action?mode=mcp&amp;name=drop&amp;params={{json:st}}" />
+
+  <view width="640" height="290">
+    <label text="{{pr}}" floating="true" left="16" top="2" width="300" height="16" font-size="14" color="#8A8A8A" long-mode="dot" />
+    <label text="{{h}}" floating="true" left="16" top="17" width="470" height="20" font-size="18" color="#FFFFFF" long-mode="dot" />
+    <label text="{{st}}" floating="true" left="500" top="3" width="124" height="20" font-size="16" color="#A0A0A0" text-align="right" />
+
+    <label text="{{P[i].t}}" floating="true" left="30" top="42" width="606" height="208" font-size="{{fz}}" color="#FFFFFF" long-mode="clip" />
+
+    <view a:if="{{m == 3}}" floating="true" left="0" top="0" width="640" height="290">
+      <view floating="true" left="0" top="40" width="640" height="212" bg-color="#000000" />
+      <view floating="true" left="16" top="{{B[0].y}}" width="3" height="{{B[0].h}}" radius="0" bg-color="#808080" />
+      <view floating="true" left="0" top="{{R[0].y}}" width="640" height="36">
+        <label text="{{R[0].r}}" floating="true" left="30" top="0" width="398" height="36" font-size="{{R[0].z}}" color="{{R[0].c}}" long-mode="clip" />
+        <label text="{{R[0].t}}" floating="true" left="336" top="0" width="80" height="24" font-size="16" color="#808080" text-align="right" />
+      </view>
+      <view floating="true" left="0" top="{{R[1].y}}" width="640" height="36">
+        <label text="{{R[1].r}}" floating="true" left="30" top="0" width="398" height="36" font-size="{{R[1].z}}" color="{{R[1].c}}" long-mode="clip" />
+        <label text="{{R[1].t}}" floating="true" left="336" top="0" width="80" height="24" font-size="16" color="#808080" text-align="right" />
+      </view>
+      <view floating="true" left="0" top="{{R[2].y}}" width="640" height="36">
+        <label text="{{R[2].r}}" floating="true" left="30" top="0" width="398" height="36" font-size="{{R[2].z}}" color="{{R[2].c}}" long-mode="clip" />
+        <label text="{{R[2].t}}" floating="true" left="336" top="0" width="80" height="24" font-size="16" color="#808080" text-align="right" />
+      </view>
+      <view floating="true" left="0" top="{{R[3].y}}" width="640" height="36">
+        <label text="{{R[3].r}}" floating="true" left="30" top="0" width="398" height="36" font-size="{{R[3].z}}" color="{{R[3].c}}" long-mode="clip" />
+        <label text="{{R[3].t}}" floating="true" left="336" top="0" width="80" height="24" font-size="16" color="#808080" text-align="right" />
+      </view>
+      <view floating="true" left="0" top="{{R[4].y}}" width="640" height="36">
+        <label text="{{R[4].r}}" floating="true" left="30" top="0" width="398" height="36" font-size="{{R[4].z}}" color="{{R[4].c}}" long-mode="clip" />
+        <label text="{{R[4].t}}" floating="true" left="336" top="0" width="80" height="24" font-size="16" color="#808080" text-align="right" />
+      </view>
+      <view floating="true" left="0" top="{{R[5].y}}" width="640" height="36">
+        <label text="{{R[5].r}}" floating="true" left="30" top="0" width="398" height="36" font-size="{{R[5].z}}" color="{{R[5].c}}" long-mode="clip" />
+        <label text="{{R[5].t}}" floating="true" left="336" top="0" width="80" height="24" font-size="16" color="#808080" text-align="right" />
+      </view>
+      <view floating="true" left="0" top="{{R[6].y}}" width="640" height="36">
+        <label text="{{R[6].r}}" floating="true" left="30" top="0" width="398" height="36" font-size="{{R[6].z}}" color="{{R[6].c}}" long-mode="clip" />
+        <label text="{{R[6].t}}" floating="true" left="336" top="0" width="80" height="24" font-size="16" color="#808080" text-align="right" />
+      </view>
+    </view>
+
+    <view floating="true" left="16" top="250" width="{{W[rp].f}}" height="30" radius="6" bg-color="{{F[fk].b}}" />
+    <view floating="true" left="17" top="261" width="8" height="8" radius="4" bg-color="{{F[fk].d}}" />
+    <label text="{{ft}}" floating="true" left="30" top="252" width="264" height="26" font-size="18" color="{{F[fk].c}}" long-mode="dot" />
+    <view floating="true" left="{{W[rp].x}}" top="252" width="120" height="26">
+      <label text="{{P[i].s}}{{fm}}" floating="true" left="0" top="0" width="120" height="26" font-size="18" color="{{F[fk].c}}" text-align="right" />
+    </view>
+
+    <view a:if="{{rp == 1}}" floating="true" left="0" top="0" width="640" height="290">
+      <label text="{{tm}}" floating="true" left="436" top="30" width="120" height="44" font-size="36" font-weight="bold" color="#FFFFFF" />
+      <label text="{{mo}}" floating="true" left="524" top="31" width="100" height="46" font-size="16" color="#A0A0A0" text-align="right" />
+      <label text="{{n0}}" floating="true" left="436" top="76" width="188" height="24" font-size="18" color="#FFFFFF" long-mode="dot" />
+      <label text="{{d0}}" floating="true" left="436" top="98" width="188" height="20" font-size="16" color="#8A8A8A" long-mode="dot" />
+      <label text="{{n1}}" floating="true" left="436" top="122" width="188" height="24" font-size="18" color="#FFFFFF" long-mode="dot" />
+      <label text="{{d1}}" floating="true" left="436" top="144" width="188" height="20" font-size="16" color="#8A8A8A" long-mode="dot" />
+      <label text="{{n2}}" floating="true" left="436" top="168" width="188" height="24" font-size="18" color="#FFFFFF" long-mode="dot" />
+      <label text="{{d2}}" floating="true" left="436" top="190" width="188" height="20" font-size="16" color="#8A8A8A" long-mode="dot" />
+      <view floating="true" left="434" top="222" width="60" height="60">
+        <view floating="true" left="2" top="2" width="56" height="56" radius="28" border-width="5" border-color="#2E2E2E" />
+        <view floating="true" left="30" top="0" width="30" height="60"><view floating="true" left="-30" top="0" width="60" height="60" rotate="{{a1}}deg"><view floating="true" left="0" top="0" width="30" height="60"><view floating="true" left="2" top="2" width="56" height="56" radius="28" border-width="5" border-color="{{u1}}" /></view></view></view>
+        <view a:if="{{e1 > 0}}" floating="true" left="0" top="0" width="31" height="60"><view floating="true" left="0" top="0" width="60" height="60" rotate="{{e1}}deg"><view floating="true" left="29" top="0" width="31" height="60"><view floating="true" left="-27" top="2" width="56" height="56" radius="28" border-width="5" border-color="{{u1}}" /></view></view></view>
+        <label text="CTX" floating="true" left="0" top="12" width="60" height="18" font-size="14" color="#A0A0A0" text-align="center" />
+        <label text="{{m1}}" floating="true" left="0" top="27" width="60" height="22" font-size="18" font-weight="bold" color="#FFFFFF" text-align="center" />
+      </view>
+      <view floating="true" left="500" top="222" width="60" height="60">
+        <view floating="true" left="2" top="2" width="56" height="56" radius="28" border-width="5" border-color="#2E2E2E" />
+        <view floating="true" left="30" top="0" width="30" height="60"><view floating="true" left="-30" top="0" width="60" height="60" rotate="{{a2}}deg"><view floating="true" left="0" top="0" width="30" height="60"><view floating="true" left="2" top="2" width="56" height="56" radius="28" border-width="5" border-color="{{u2}}" /></view></view></view>
+        <view a:if="{{e2 > 0}}" floating="true" left="0" top="0" width="31" height="60"><view floating="true" left="0" top="0" width="60" height="60" rotate="{{e2}}deg"><view floating="true" left="29" top="0" width="31" height="60"><view floating="true" left="-27" top="2" width="56" height="56" radius="28" border-width="5" border-color="{{u2}}" /></view></view></view>
+        <label text="PLAN" floating="true" left="0" top="12" width="60" height="18" font-size="14" color="#A0A0A0" text-align="center" />
+        <label text="{{m2}}" floating="true" left="0" top="27" width="60" height="22" font-size="18" font-weight="bold" color="#FFFFFF" text-align="center" />
+      </view>
+      <view floating="true" left="566" top="222" width="60" height="60">
+        <view floating="true" left="2" top="2" width="56" height="56" radius="28" border-width="5" border-color="#2E2E2E" />
+        <view floating="true" left="30" top="0" width="30" height="60"><view floating="true" left="-30" top="0" width="60" height="60" rotate="{{a3}}deg"><view floating="true" left="0" top="0" width="30" height="60"><view floating="true" left="2" top="2" width="56" height="56" radius="28" border-width="5" border-color="{{u3}}" /></view></view></view>
+        <view a:if="{{e3 > 0}}" floating="true" left="0" top="0" width="31" height="60"><view floating="true" left="0" top="0" width="60" height="60" rotate="{{e3}}deg"><view floating="true" left="29" top="0" width="31" height="60"><view floating="true" left="-27" top="2" width="56" height="56" radius="28" border-width="5" border-color="{{u3}}" /></view></view></view>
+        <label text="5H" floating="true" left="0" top="12" width="60" height="18" font-size="14" color="#A0A0A0" text-align="center" />
+        <label text="{{m3}}" floating="true" left="0" top="27" width="60" height="22" font-size="18" font-weight="bold" color="#FFFFFF" text-align="center" />
+      </view>
+    </view>
+
+    <view a:if="{{m > 3}}" floating="true" left="0" top="0" width="640" height="290" bg-color="#000000">
+      <view floating="true" left="16" top="{{tt[c].n}}" width="608" height="30" radius="0" animate-translate-y="{{d:an}}">
+        <view floating="true" left="8" top="0" width="600" height="30" radius="4" bg-color="#262626" />
+        <view floating="true" left="0" top="0" width="3" height="30" radius="0" bg-color="#FFFFFF" />
+      </view>
+      <view a:if="{{m == 4}}" floating="true" left="0" top="0" width="640" height="250">
+        <label text="切换任务" floating="true" left="30" top="10" width="440" height="26" font-size="18" color="#A0A0A0" />
+        <label text="返回" floating="true" left="30" top="45" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="{{L[0].a}}" floating="true" left="30" top="79" width="420" height="30" font-size="20" color="#E0E0E0" long-mode="dot" />
+        <label text="{{L[0].e}}" floating="true" left="464" top="82" width="160" height="24" font-size="16" color="#A0A0A0" text-align="right" />
+        <label text="{{L[1].a}}" floating="true" left="30" top="113" width="420" height="30" font-size="20" color="#E0E0E0" long-mode="dot" />
+        <label text="{{L[1].e}}" floating="true" left="464" top="116" width="160" height="24" font-size="16" color="#A0A0A0" text-align="right" />
+        <label text="{{L[2].a}}" floating="true" left="30" top="147" width="420" height="30" font-size="20" color="#E0E0E0" long-mode="dot" />
+        <label text="{{L[2].e}}" floating="true" left="464" top="150" width="160" height="24" font-size="16" color="#A0A0A0" text-align="right" />
+        <label text="{{L[3].a}}" floating="true" left="30" top="181" width="420" height="30" font-size="20" color="#E0E0E0" long-mode="dot" />
+        <label text="{{L[3].e}}" floating="true" left="464" top="184" width="160" height="24" font-size="16" color="#A0A0A0" text-align="right" />
+        <label text="{{L[4].a}}" floating="true" left="30" top="215" width="420" height="30" font-size="20" color="#E0E0E0" long-mode="dot" />
+        <label text="{{L[4].e}}" floating="true" left="464" top="218" width="160" height="24" font-size="16" color="#A0A0A0" text-align="right" />
+      </view>
+      <view a:elif="{{m == 5}}" floating="true" left="0" top="0" width="640" height="250">
+        <label text="菜单" floating="true" left="30" top="10" width="440" height="26" font-size="18" color="#A0A0A0" />
+        <label text="返回" floating="true" left="30" top="45" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="切换任务" floating="true" left="30" top="79" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="{{mv.t}}" floating="true" left="30" top="113" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="计划与改动" floating="true" left="30" top="147" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="快捷回复" floating="true" left="30" top="181" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="字号" floating="true" left="30" top="215" width="420" height="30" font-size="20" color="#E0E0E0" />
+      </view>
+      <view a:elif="{{m == 6}}" floating="true" left="0" top="0" width="640" height="250">
+        <label text="快捷回复" floating="true" left="30" top="10" width="200" height="26" font-size="18" color="#A0A0A0" />
+        <label text="{{dt}}" floating="true" left="236" top="10" width="388" height="26" font-size="18" color="#A0A0A0" text-align="right" long-mode="dot" />
+        <label text="返回" floating="true" left="30" top="45" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="继续" floating="true" left="30" top="79" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="好的，就这么做" floating="true" left="30" top="113" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="先停一下" floating="true" left="30" top="147" width="420" height="30" font-size="20" color="#E0E0E0" />
+        <label text="说简单点" floating="true" left="30" top="181" width="420" height="30" font-size="20" color="#E0E0E0" />
+      </view>
+      <view a:else="" floating="true" left="0" top="0" width="640" height="252" bg-color="#000000">
+        <label text="计划与改动" floating="true" left="30" top="10" width="300" height="26" font-size="18" color="#A0A0A0" />
+        <label text="{{q}}" floating="true" left="30" top="34" width="580" height="32" font-size="16" color="#909090" long-mode="dot" />
+        <label text="{{PL[0].s}}" floating="true" left="30" top="70" width="30" height="24" font-size="20" color="{{PL[0].c}}" />
+        <label text="{{PL[0].t}}" floating="true" left="68" top="70" width="536" height="24" font-size="18" color="{{PL[0].c}}" long-mode="dot" />
+        <label text="{{PL[1].s}}" floating="true" left="30" top="102" width="30" height="24" font-size="20" color="{{PL[1].c}}" />
+        <label text="{{PL[1].t}}" floating="true" left="68" top="102" width="536" height="24" font-size="18" color="{{PL[1].c}}" long-mode="dot" />
+        <label text="{{PL[2].s}}" floating="true" left="30" top="134" width="30" height="24" font-size="20" color="{{PL[2].c}}" />
+        <label text="{{PL[2].t}}" floating="true" left="68" top="134" width="536" height="24" font-size="18" color="{{PL[2].c}}" long-mode="dot" />
+        <label text="{{PL[3].s}}" floating="true" left="30" top="166" width="30" height="24" font-size="20" color="{{PL[3].c}}" />
+        <label text="{{PL[3].t}}" floating="true" left="68" top="166" width="536" height="24" font-size="18" color="{{PL[3].c}}" long-mode="dot" />
+        <label text="{{PL[4].s}}" floating="true" left="30" top="198" width="30" height="24" font-size="20" color="{{PL[4].c}}" />
+        <label text="{{PL[4].t}}" floating="true" left="68" top="198" width="536" height="24" font-size="18" color="{{PL[4].c}}" long-mode="dot" />
+        <label text="{{dfx}}" floating="true" left="30" top="228" width="360" height="20" font-size="16" color="#A0A0A0" />
+      </view>
+      <label text="滑动移动" floating="true" left="412" top="252" width="212" height="26" font-size="16" color="#A0A0A0" text-align="right" />
+    </view>
+
+    <view a:if="{{m == 1}}" floating="true" left="0" top="0" width="640" height="290" bg-color="#000000">
+      <label text="字号" floating="true" left="30" top="10" width="440" height="26" font-size="18" color="#A0A0A0" />
+      <label text="{{d:fv}}" floating="true" left="30" top="52" width="200" height="60" font-size="44" font-weight="bold" color="#FFFFFF" />
+      <label text="回复和进度都用这个大小。Codex 正在想。" floating="true" left="30" top="140" width="594" height="40" font-size="{{d:fv}}" color="#FFFFFF" long-mode="clip" />
+      <label text="单击保存" floating="true" left="30" top="252" width="380" height="26" font-size="18" color="#A0A0A0" />
+      <label text="滑动调整，16 到 24" floating="true" left="412" top="252" width="212" height="26" font-size="16" color="#A0A0A0" text-align="right" />
+    </view>
+
+    <view a:if="{{m == 2}}" floating="true" left="0" top="0" width="640" height="290" bg-color="#000000">
+      <label text="{{dt}}" floating="true" left="30" top="10" width="594" height="26" font-size="18" color="#A0A0A0" long-mode="dot" />
+      <label text="{{dr}}" floating="true" left="30" top="52" width="606" height="180" font-size="24" color="#FFFFFF" long-mode="clip" />
+      <view floating="true" left="16" top="250" width="608" height="30" radius="6" bg-color="#FFFFFF" />
+      <label text="{{df}}" floating="true" left="30" top="252" width="440" height="26" font-size="18" color="#000000" long-mode="dot" />
+      <label text="滑动取消" floating="true" left="480" top="254" width="132" height="24" font-size="16" color="#000000" text-align="right" />
+    </view>
+  </view>
+</view>

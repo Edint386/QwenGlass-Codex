@@ -1,0 +1,33 @@
+name: qwenglass-codex
+
+services:
+  codex:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: qwenglass-codex:local
+    container_name: qwenglass-codex
+    env_file:
+      - ../.env
+    ports:
+      - 127.0.0.1:19520:8792
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    cap_drop:
+      - ALL
+    mem_limit: 128m
+    pids_limit: 64
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8792/healthz', timeout=2)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
