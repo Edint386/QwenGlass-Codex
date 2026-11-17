@@ -193,7 +193,7 @@ async def main() -> None:
     args = parser.parse_args()
     session = f"fake_{uuid.uuid4().hex[:8]}"
     headers = {"Authorization": f"Bearer {args.token}", "X-Request-Id": uuid.uuid4().hex}
-    async with websockets.connect(args.url, additional_headers=headers) as ws:
+    async with websockets.connect(args.url, additional_headers=headers, proxy=None) as ws:
         glasses = Glasses(ws, session)
         await glasses.platform("SESSION_INIT", {
             "connectionEpoch": 1,

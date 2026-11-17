@@ -156,6 +156,7 @@ class Bridge:
                 async with websockets.connect(
                     self.url,
                     additional_headers=headers,
+                    proxy=None,
                     ping_interval=20,
                     ping_timeout=20,
                     max_size=2**21,
